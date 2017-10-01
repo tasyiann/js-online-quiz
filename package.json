@@ -1,5 +1,5 @@
 {
-  "name": "@1dv022/exercise",
+  "name": "@CS-LNU-Learning-Objects/exercise-memory-game",
   "version": "1.0.0",
   "homepage": "https://coursepress.lnu.se/kurs/klientbaserad-webbprogrammering/",
   "contributors": [
@@ -23,7 +23,7 @@
   "license": "CC-BY-4.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/1dv022/exercise"
+    "url": "https://github.com/CS-LNU-Learning-Objects/exercise-memory-game"
   },
   "engines": {
     "node": ">=7.0.0"
