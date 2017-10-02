@@ -14,6 +14,7 @@ var url = 'http://vhost3.lnu.se:20080/question/1'           // start with 1st qu
 var questionContainer = document.getElementById('question') // where to put question
 var startbtn = document.getElementById('start_btn')         // button to start
 var textinput = document.querySelector('#textanswer')
+var message = document.querySelector('#message')
 
 // Click start button to start the game
 startbtn.addEventListener('click', function () {
@@ -70,7 +71,12 @@ function displayQuestion (data) {
 function sendAnswer (x, data) {
   var request = new XMLHttpRequest()
   request.addEventListener('load', function () {
-    console.log(request.responseText)
+    var response = JSON.parse(request.response)
+    console.log(response.message)
+    message.innerHTML = response.message
+    if (request.status >= 400) {
+      throw new Error('Network error: ' + request.status)
+    }
   })
 
   request.open('POST', data.nextURL)
@@ -85,6 +91,9 @@ function sendAnswer (x, data) {
 var startCounting = function () {
   setInterval(function () {
     timer()
+    if (time === 0) {
+      time = 20
+    }
   }, 1000)
 }
 
