@@ -9,10 +9,11 @@ The last question answered will not return any new link to
 a new question and that means that the quiz is over.
 */
 
-var time = 1                                                // 1 to 20 seconds per question
+var time = 20                                               // 1 to 20 seconds per question
 var url = 'http://vhost3.lnu.se:20080/question/1'           // start with 1st question
 var questionContainer = document.getElementById('question') // where to put question
 var startbtn = document.getElementById('start_btn')         // button to start
+var textinput = document.querySelector('#textanswer')
 
 // Click start button to start the game
 startbtn.addEventListener('click', function () {
@@ -33,6 +34,17 @@ startbtn.addEventListener('click', function () {
       console.log(data)
       displayQuestion(data)
       startCounting()
+      // Get the text from input
+      textinput.addEventListener('keypress', function (event) {
+        if (event.KeyCode === 13 || event.which === 13) {
+          console.log('answer from text input: ' + textinput.value)
+          if (textinput.value.length === 0) {
+            console.log('Answer not found. Give an answer')
+          } else {
+            sendAnswer(textinput.value, data)
+          }
+        }
+      })
     } else {
       console.log('Returns error')
     }
@@ -55,9 +67,18 @@ function displayQuestion (data) {
   questionContainer.insertAdjacentHTML('beforeend', string)
 }
 /* Send the answer */
-function sendAnswer (answer, data) {
+function sendAnswer (x, data) {
   var request = new XMLHttpRequest()
-  request.open('POST', request.responseText.nextURL)
+  request.addEventListener('load', function () {
+    console.log(request.responseText)
+  })
+
+  request.open('POST', data.nextURL)
+  console.log('hi! next url is:' + data.nextURL)
+  var answer = {
+    answer: x
+  }
+  request.setRequestHeader('Content-type', 'application/json')
   request.send(JSON.stringify(answer))
 }
 // Counting the seconds
@@ -69,5 +90,5 @@ var startCounting = function () {
 
 // Show the seconds on the page
 function timer () {
-  document.getElementById('secondsleft').innerHTML = time++
+  document.getElementById('secondsleft').innerHTML = time--
 }
