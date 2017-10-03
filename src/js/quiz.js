@@ -64,7 +64,17 @@ function sendAnswer (data) {
         var data = JSON.parse(req.responseText)
         message.innerHTML = data.message
         console.log(data)
-        getQuestion(data.nextURL, sendAnswer)
+        // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+        var flag = false
+        for (var key in data) {
+          if (key === 'nextURL') {
+            getQuestion(data.nextURL, sendAnswer)
+            flag = true
+          }
+        }
+        if (flag === false){
+          console.log('CONGRATZULATIONSAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
+        }
       } else {
         console.log('Error with GET')
         gameOver()
@@ -181,7 +191,20 @@ function gameOver () {
   parent.appendChild(infoDiv)
   var sc = document.getElementById('score')
   sc.innerHTML = score
-  score = 0
   // NOW GET IN THE HIGH SCORES!
   // <<<<<<<<>>>>>>>>>>>>>>><<<<<<<<<<<>>>>>
+  toHighScores()
+  score = 0 // reset score after
+}
+function toHighScores () {
+  var game = {
+    player: config.username,
+    score: score
+  }
+  var top5 = []
+  top5.push(game)
+  // top5 = JSON.stringify(top5)
+  // localStorage.setItem('top5', top5)
+  // var top5 = localStorage.getItem('top5')
+  console.log(top5)
 }
