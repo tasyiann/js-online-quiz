@@ -15,9 +15,17 @@ var textinput = document.querySelector('#textanswer')
 var radioChoices = document.querySelector('#radiochoices')
 var check = document.querySelector('#check_btn')
 var message = document.querySelector('#message')
+var infoDiv = document.querySelector('#info')
+var quizDiv = document.querySelector('#quiz')
+var startDiv = document.querySelector('#start')
+var playAgainbtn = document.querySelector('#restartGame')
+var time = 20
+var score = 0
 
 function quiz (quizDiv, quizConfig) {
+  console.log(quizConfig.username)
   config.url = quizConfig.url
+  config.username = quizConfig.username
   console.log(config)
   // Print the question
   getQuestion(config.url, sendAnswer)
@@ -28,10 +36,10 @@ function sendAnswer (data) {
   console.log(data)
   console.log('WE ARE IN SEND ANSWER')
   var promise = new Promise(function (resolve, reject) {
-    setTimeout(reject, 5000)
+    setTimeout(reject, 20000)
     check.addEventListener('click', function (e) {
       console.log('CLICK!')
-      e.target.removeEventListener(e.type, arguments.callee) // skip for now
+      // e.target.removeEventListener(e.type, arguments.callee) // skip for now
       // GET DATA FROM INPUT
       var answer = getUserAnswer(data)
       console.log('>> Checking if answer is correct...')
@@ -44,8 +52,6 @@ function sendAnswer (data) {
     })
   }).then((readyanswer) => {
     console.log(data) // if this prints, then is okay.
-    // we will rebuyilt the config
-    // howwwwwwww... call back maybe?
     console.log('PREPARING TO SEND <' + readyanswer + '>')
     var req = new XMLHttpRequest()
     req.open('POST', data.nextURL)
@@ -54,16 +60,21 @@ function sendAnswer (data) {
     req.onload = function () {
       // Check the request status
       if (req.status >= 200 && req.status < 400) {
+        score++
         var data = JSON.parse(req.responseText)
         message.innerHTML = data.message
         console.log(data)
         getQuestion(data.nextURL, sendAnswer)
-      } else { console.log('Error with GET') }
+      } else {
+        console.log('Error with GET')
+        gameOver()
+      }
     }
   })
     .catch(err => {
       console.log(err)
-      console.log('TIME IS UP! GO HOME')
+      console.log('lol you failed')
+      gameOver()
     })
 }
 //
@@ -95,16 +106,18 @@ function displayQuestion (data) {
 }
 
 function displayAnswers (data) {
+  // Clean the div first
+  cleanAnswerDiv()
   console.log('welcome')
   for (var key in data) {
     if (key === 'alternatives') {
       console.log('Alternatives mode!')
       showAlternatives(data.alternatives)
-      break
-    } else {
-      textinput.classList.add('visible')
+      return
     }
   }
+  // Else, is type of textinput
+  textinput.classList.add('visible')
 }
 function showAlternatives (alternatives) {
   console.log(alternatives)
@@ -136,4 +149,39 @@ function getUserAnswer (data) {
   // It is from inputtext
   console.log('> Getting answer from textinput')
   return textinput.value
+}
+function cleanAnswerDiv () {
+  console.log('CLEAN ANSWER')
+  textinput.classList.remove('visible')
+  textinput.classList.add('hide-me')
+  textinput.value = ''
+  while (radioChoices.firstChild) {
+    radioChoices.removeChild(radioChoices.firstChild)
+  }
+}
+function startCounting () {
+  setInterval(function () {
+    timer(--time)
+  }, 1000)
+}
+
+// Show the seconds on the page
+function timer (time) {
+  document.getElementById('secondsleft').innerHTML = time
+}
+//
+playAgainbtn.addEventListener('click', function () {
+  var parent = infoDiv.parentNode
+  parent.removeChild(infoDiv)
+  parent.appendChild(startDiv)
+})
+function gameOver () {
+  var parent = quizDiv.parentNode
+  parent.removeChild(quizDiv)
+  parent.appendChild(infoDiv)
+  var sc = document.getElementById('score')
+  sc.innerHTML = score
+  score = 0
+  // NOW GET IN THE HIGH SCORES!
+  // <<<<<<<<>>>>>>>>>>>>>>><<<<<<<<<<<>>>>>
 }

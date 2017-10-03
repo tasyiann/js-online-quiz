@@ -8,9 +8,20 @@
 </head>
 
 <body>
-    <div id='quiz'>
-
+    <div id='start' class='window'>
+        <label id='name'>Give your name:</label>
+        <input type="text" id="username">
         <button type="button" id='start_btn'>START</button>
+    </div>
+
+    <div id='info' class='window'>
+        <p>Your score is:</p>
+        <div id='score'></div>
+        <button type="button" id="restartGame">PLAY AGAIN</button>
+        <button type="button" id="highscores">HIGH SCORES</button>
+    </div>
+
+    <div id='quiz' class='window'>
         <button type="button" id='check_btn'>CHECK</button>
         <div id='question'></div>
         <div id='answers'>
@@ -22,8 +33,6 @@
             <div id='message'></div>
         </div>
         <div id='secondsleft'></div>
-
-
     </div>
 
 
