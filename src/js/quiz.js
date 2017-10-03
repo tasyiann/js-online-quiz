@@ -28,6 +28,7 @@ function sendAnswer (data) {
   console.log(data)
   console.log('WE ARE IN SEND ANSWER')
   var promise = new Promise(function (resolve, reject) {
+    setTimeout(reject, 5000)
     check.addEventListener('click', function (e) {
       console.log('CLICK!')
       e.target.removeEventListener(e.type, arguments.callee) // skip for now
@@ -40,7 +41,6 @@ function sendAnswer (data) {
       console.log('ANSWER CHOSEN: ' + x.answer)
       x = JSON.stringify(x)
       resolve(x)
-
     })
   }).then((readyanswer) => {
     console.log(data) // if this prints, then is okay.
@@ -61,7 +61,10 @@ function sendAnswer (data) {
       } else { console.log('Error with GET') }
     }
   })
-    .catch(err => console.log(err))
+    .catch(err => {
+      console.log(err)
+      console.log('TIME IS UP! GO HOME')
+    })
 }
 //
 // hm.... can I make a new object, for every question, passing the data?
