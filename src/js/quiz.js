@@ -14,13 +14,16 @@ var questionContainer = document.getElementById('question') // where to put ques
 var textinput = document.querySelector('#textanswer')
 var radioChoices = document.querySelector('#radiochoices')
 var check = document.querySelector('#check_btn')
-var message = document.querySelector('#message')
+// var message = document.querySelector('#message')
 var infoDiv = document.querySelector('#info')
 var quizDiv = document.querySelector('#quiz')
 var startDiv = document.querySelector('#start')
 var playAgainbtn = document.querySelector('#restartGame')
+var statement = document.querySelector('#winOrLose')
+var startTime, endTime
 var time = 20
 var score = 0
+var interval
 
 function quiz (quizDiv, quizConfig) {
   console.log(quizConfig.username)
@@ -28,6 +31,8 @@ function quiz (quizDiv, quizConfig) {
   config.username = quizConfig.username
   console.log(config)
   // Print the question
+  start()
+  startCounting()
   getQuestion(config.url, sendAnswer)
 }
 // So, after the callback, the data returns as a parameter
@@ -60,11 +65,10 @@ function sendAnswer (data) {
     req.onload = function () {
       // Check the request status
       if (req.status >= 200 && req.status < 400) {
-        score++
+        time = 20 // Answer is correct, reset time
         var data = JSON.parse(req.responseText)
-        message.innerHTML = data.message
+        // message.innerHTML = data.message
         console.log(data)
-        // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
         var flag = false
         for (var key in data) {
           if (key === 'nextURL') {
@@ -72,8 +76,8 @@ function sendAnswer (data) {
             flag = true
           }
         }
-        if (flag === false){
-          console.log('CONGRATZULATIONSAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
+        if (flag === false) {
+          gameWin()
         }
       } else {
         console.log('Error with GET')
@@ -170,8 +174,8 @@ function cleanAnswerDiv () {
   }
 }
 function startCounting () {
-  setInterval(function () {
-    timer(--time)
+  interval = setInterval(function () {
+    timer(time--)
   }, 1000)
 }
 
@@ -186,15 +190,23 @@ playAgainbtn.addEventListener('click', function () {
   parent.appendChild(startDiv)
 })
 function gameOver () {
+  clearInterval(interval)
+  time = 20 // reset time
   var parent = quizDiv.parentNode
   parent.removeChild(quizDiv)
   parent.appendChild(infoDiv)
-  var sc = document.getElementById('score')
-  sc.innerHTML = score
-  // NOW GET IN THE HIGH SCORES!
-  // <<<<<<<<>>>>>>>>>>>>>>><<<<<<<<<<<>>>>>
+  statement.innerHTML = 'OOPS... GAME OVER!'
+}
+function gameWin () {
+  clearInterval(interval)
+  end()
+  time = 20 // reset time
+  var parent = quizDiv.parentNode
+  parent.removeChild(quizDiv)
+  parent.appendChild(infoDiv)
+  statement.innerHTML = 'Congratzulations! You completed the quiz.' +
+  'Your total time is: ' + score
   toHighScores()
-  score = 0 // reset score after
 }
 function toHighScores () {
   var game = {
@@ -207,4 +219,17 @@ function toHighScores () {
   // localStorage.setItem('top5', top5)
   // var top5 = localStorage.getItem('top5')
   console.log(top5)
+}
+function start () {
+  startTime = new Date()
+};
+
+function end () {
+  endTime = new Date()
+  var timeDiff = endTime - startTime
+  // strip the ms
+  timeDiff /= 1000
+  // get seconds 
+  score = timeDiff
+  console.log(score + 'seconds')
 }
