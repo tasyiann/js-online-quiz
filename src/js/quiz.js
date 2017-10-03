@@ -33,17 +33,14 @@ function sendAnswer (data) {
       e.target.removeEventListener(e.type, arguments.callee) // skip for now
       // GET DATA FROM INPUT
       var answer = getUserAnswer(data)
-      if (answer.length === 0) {
-        console.log('Answer not found. Give an answer')
-      } else {
-        console.log('>> Checking if answer is correct...')
-        var x = {
-          answer: answer
-        }
-        console.log('ANSWER CHOSEN: ' + x.answer)
-        x = JSON.stringify(x)
-        resolve(x)
+      console.log('>> Checking if answer is correct...')
+      var x = {
+        answer: answer
       }
+      console.log('ANSWER CHOSEN: ' + x.answer)
+      x = JSON.stringify(x)
+      resolve(x)
+
     })
   }).then((readyanswer) => {
     console.log(data) // if this prints, then is okay.
@@ -124,19 +121,16 @@ function createAlternative (value, text) {
   radioChoices.appendChild(text)
 }
 function getUserAnswer (data) {
+  console.log(data)
   for (var key in data) {
+    console.log(key)
     if (key === 'alternatives') {
       console.log('> Getting answer from Alternatives')
-      var choices = document.getElementsByName('choices')
-      for (var x in choices) {
-        if (x.checked) {
-          console.log('> Chosen alternative: ' + x.checked)
-          return 'salami'
-        }
-      }
-    } else {
-      console.log('> Getting answer from textinput')
-      return textinput.value
+      var chosen = document.querySelector('input[name = "choices"]:checked').value
+      return chosen
     }
-  }
+  } // end of for
+  // It is from inputtext
+  console.log('> Getting answer from textinput')
+  return textinput.value
 }
