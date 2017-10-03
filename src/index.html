@@ -1,22 +1,33 @@
 <!doctype html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <title>Examination-2</title>
-        <link rel="stylesheet" href="css/style.css" />
-    </head>
-    <body>
+
+<head>
+    <meta charset="utf-8">
+    <title>Examination-2</title>
+    <link rel="stylesheet" href="css/style.css" />
+</head>
+
+<body>
+    <div id='quiz'>
+
         <button type="button" id='start_btn'>START</button>
+        <button type="button" id='check_btn'>CHECK</button>
         <div id='question'></div>
         <div id='answers'>
 
-            <input type="text" id='textanswer'>
+            <input type="text" id='textanswer' class='hide-me'>
             <div id='radiochoices'>
 
             </div>
             <div id='message'></div>
         </div>
         <div id='secondsleft'></div>
-        <script src="build.js"></script> 
-    </body>
+
+
+    </div>
+
+
+    <script src="build.js"></script>
+</body>
+
 </html>

@@ -1,8 +1,20 @@
 .hide-me{
   visibility: hidden;
 }
+.visible{
+  visibility: visible;
+}
 
 #message{
   size: 30px;
   color: red;
+}
+.radioButton{
+  color: red;
+  size: 100px;
+  background: green;
+
+}
+.look{
+  size: 100px
 }
