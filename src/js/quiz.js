@@ -260,7 +260,7 @@ function updateHighScores () {
     return 0
   }
   var array = []
-  array.concat(top5)
+  array = top5
   array.sort(compare)
   top5 = array
   //
