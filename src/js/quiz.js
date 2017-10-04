@@ -49,12 +49,15 @@ function quiz (quizDiv, quizConfig) {
 function sendAnswer (data) {
   console.log(data)
   console.log('WE ARE IN SEND ANSWER')
+  // We make a promise. It will promise us that the answer, will be given
+  // to us as soon as the user gives an answer.
   var promise = new Promise(function (resolve, reject) {
     setTimeout(reject, 20000)
+    // By clicking the check, it means that the user has made a decision - answer
     check.addEventListener('click', function (e) {
       console.log('CLICK!')
       // e.target.removeEventListener(e.type, arguments.callee) // skip for now
-      // GET DATA FROM INPUT
+      // GET DATA FROM USER
       var answer = getUserAnswer(data)
       console.log('>> Checking if answer is correct...')
       var x = {
@@ -63,7 +66,7 @@ function sendAnswer (data) {
       console.log('ANSWER CHOSEN: ' + x.answer)
       x = JSON.stringify(x)
       resolve(x)
-    })
+    }) // Then, we have to send our answer to the server.
   }).then((readyanswer) => {
     console.log(data) // if this prints, then is okay.
     console.log('PREPARING TO SEND <' + readyanswer + '>')
@@ -78,6 +81,8 @@ function sendAnswer (data) {
         var data = JSON.parse(req.responseText)
         // message.innerHTML = data.message
         console.log(data)
+        // IMPORTANT! If there is not any other nextURL, then
+        // the game has finished! We won :)
         var flag = false
         for (var key in data) {
           if (key === 'nextURL') {
@@ -101,8 +106,6 @@ function sendAnswer (data) {
     })
 }
 //
-// hm.... can I make a new object, for every question, passing the data?
-// promise can return u the next url
 //
 function getQuestion (url, callback) {
   // Make the request to the server
@@ -114,9 +117,9 @@ function getQuestion (url, callback) {
     // Check the request status
     if (req.status >= 200 && req.status < 400) {
       var data = JSON.parse(req.responseText)
+      // As soon as it loads, it displays:
       displayQuestion(data)
       displayAnswers(data)
-      console.log(data)
       callback(data)
     } else { console.log('Error with GET') }
   }
@@ -227,9 +230,6 @@ function toHighScores () {
   top5.push(game)
   top5 = JSON.stringify(top5)
   localStorage.setItem('top5', top5)
-  // top5 = JSON.stringify(top5)
-  // localStorage.setItem('top5', top5)
-  // var top5 = localStorage.getItem('top5')
   console.log(top5)
 }
 function start () {
