@@ -20,10 +20,19 @@ var quizDiv = document.querySelector('#quiz')
 var startDiv = document.querySelector('#start')
 var playAgainbtn = document.querySelector('#restartGame')
 var statement = document.querySelector('#winOrLose')
+var highscores = document.querySelector('#highscores')
+
 var startTime, endTime
 var time = 20
 var score = 0
 var interval
+var top5
+if (localStorage.getItem('top5') === '') {
+  top5 = []
+} else {
+  top5 = JSON.parse(localStorage.getItem('top5'))
+  console.log(localStorage.getItem('top5'))
+}
 
 function quiz (quizDiv, quizConfig) {
   console.log(quizConfig.username)
@@ -190,6 +199,7 @@ playAgainbtn.addEventListener('click', function () {
   parent.appendChild(startDiv)
 })
 function gameOver () {
+  updateHighScores()
   clearInterval(interval)
   time = 20 // reset time
   var parent = quizDiv.parentNode
@@ -207,14 +217,16 @@ function gameWin () {
   statement.innerHTML = 'Congratzulations! You completed the quiz.' +
   'Your total time is: ' + score
   toHighScores()
+  updateHighScores()
 }
 function toHighScores () {
   var game = {
     player: config.username,
     score: score
   }
-  var top5 = []
   top5.push(game)
+  top5 = JSON.stringify(top5)
+  localStorage.setItem('top5', top5)
   // top5 = JSON.stringify(top5)
   // localStorage.setItem('top5', top5)
   // var top5 = localStorage.getItem('top5')
@@ -232,4 +244,29 @@ function end () {
   // get seconds 
   score = timeDiff
   console.log(score + 'seconds')
+}
+function updateHighScores () {
+  while (highscores.firstChild) {
+    highscores.removeChild(highscores.firstChild)
+  }
+  // Sort Highscores board
+  function compare (a, b) {
+    if (parseFloat(a.score) < parseFloat(b.score)) {
+      return -1
+    }
+    if (parseFloat(a.score) > parseFloat(b.score)) {
+      return 1
+    }
+    return 0
+  }
+  var array = []
+  array = top5
+  array.sort(compare)
+  top5 = array
+  for (let i = 0; i < top5.length; i++) {
+    var node = document.createElement('LI')  // Create a <li> node
+    var textnode = document.createTextNode(top5[i].player + ' scored: ' + top5[i].score) // Create a text node
+    node.appendChild(textnode)
+    highscores.appendChild(node)
+  }
 }
