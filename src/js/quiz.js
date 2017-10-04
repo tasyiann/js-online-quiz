@@ -260,9 +260,10 @@ function updateHighScores () {
     return 0
   }
   var array = []
-  array = top5
+  array.concat(top5)
   array.sort(compare)
   top5 = array
+  //
   for (let i = 0; i < top5.length; i++) {
     var node = document.createElement('LI')  // Create a <li> node
     var textnode = document.createTextNode(top5[i].player + ' scored: ' + top5[i].score) // Create a text node
