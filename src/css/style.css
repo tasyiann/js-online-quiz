@@ -27,7 +27,7 @@ body{
 }
 .radioButton{
   vertical-align: middle;
-  margin-top: -1
+  margin-top: -1;
 }
 .look{
   size: 100px
@@ -35,7 +35,8 @@ body{
 
 #radiochoices{
   color: white;
-  text-align: center
+  text-align: center;
+  vertical-align: middle;
 }
 
 .window{

@@ -1,5 +1,5 @@
 {
-  "name": "@CS-LNU-Learning-Objects/exercise-memory-game",
+  "name": "@CS-LNU-Learning-Objects/exercise-clientside-template",
   "version": "1.0.0",
   "homepage": "https://coursepress.lnu.se/kurs/klientbaserad-webbprogrammering/",
   "contributors": [
@@ -23,7 +23,7 @@
   "license": "CC-BY-4.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/CS-LNU-Learning-Objects/exercise-memory-game"
+    "url": "https://github.com/CS-LNU-Learning-Objects/exercise-clientside-template"
   },
   "engines": {
     "node": ">=7.0.0"
@@ -41,6 +41,7 @@
   "bin": {},
   "scripts": {
     "debug": "webpack-dev-server",
-    "start": "webpack-dev-server"
+    "start": "webpack-dev-server",
+    "build": "webpack"
   }
 }

@@ -1,3 +1,5 @@
+// var localStorage = require('localStorage')
+// var XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest
 module.exports = {
   quiz: quiz
 }
@@ -26,19 +28,28 @@ var startTime, endTime
 var time = 20
 var score = 0
 var interval
-var top5
-if (localStorage.getItem('top5') === '') {
-  top5 = []
-} else {
-  top5 = JSON.parse(localStorage.getItem('top5'))
-  console.log(localStorage.getItem('top5'))
+var top5 = []
+try {
+  let item = localStorage.getItem('top5')
+  console.log(item)
+  if (item !== '' && item !== null) {
+    console.log('HEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEELLL YEAH')
+    var temp = JSON.parse(item)
+    console.log('>>>>' + temp[0].player + ' LENGth: ' + temp.length)
+    for (let i = 0; i < temp.length; i++) {
+      console.log(temp[i] + ' is pushed in top5 ')
+      top5.push(temp[i])
+    }
+  }
+} catch (err) {
+
 }
 
 function quiz (quizDiv, quizConfig) {
-  console.log(quizConfig.username)
+  // console.log(quizConfig.username)
   config.url = quizConfig.url
   config.username = quizConfig.username
-  console.log(config)
+  // console.log(config)
   // Print the question
   start()
   startCounting()
@@ -47,19 +58,23 @@ function quiz (quizDiv, quizConfig) {
 // So, after the callback, the data returns as a parameter
 // The answer from the user should be send, after the click event
 function sendAnswer (data) {
-  console.log(data)
-  console.log('WE ARE IN SEND ANSWER')
+  // console.log(data)
+  // console.log('WE ARE IN SEND ANSWER')
   // We make a promise. It will promise us that the answer, will be given
   // to us as soon as the user gives an answer.
-  var promise = new Promise(function (resolve, reject) {
+  new Promise(function (resolve, reject) {
     setTimeout(reject, 20000)
     // By clicking the check, it means that the user has made a decision - answer
     check.addEventListener('click', function (e) {
-      console.log('CLICK!')
-      // e.target.removeEventListener(e.type, arguments.callee) // skip for now
+      // console.log('CLICK!')
+      e.target.removeEventListener(e.type, arguments.callee) // skip for now
       // GET DATA FROM USER
-      var answer = getUserAnswer(data)
-      console.log('>> Checking if answer is correct...')
+      try {
+        var answer = getUserAnswer(data)
+      } catch (err) {
+        console.log('User didnt gave an answer.')
+      }
+      // console.log('>> Checking if answer is correct...')
       var x = {
         answer: answer
       }
@@ -68,8 +83,8 @@ function sendAnswer (data) {
       resolve(x)
     }) // Then, we have to send our answer to the server.
   }).then((readyanswer) => {
-    console.log(data) // if this prints, then is okay.
-    console.log('PREPARING TO SEND <' + readyanswer + '>')
+    // console.log(data) // if this prints, then is okay.
+    console.log('Sending answer... <' + readyanswer + '>')
     var req = new XMLHttpRequest()
     req.open('POST', data.nextURL)
     req.setRequestHeader('Content-type', 'application/json')
@@ -80,7 +95,7 @@ function sendAnswer (data) {
         time = 20 // Answer is correct, reset time
         var data = JSON.parse(req.responseText)
         // message.innerHTML = data.message
-        console.log(data)
+        // console.log(data)
         // IMPORTANT! If there is not any other nextURL, then
         // the game has finished! We won :)
         var flag = false
@@ -134,10 +149,10 @@ function displayQuestion (data) {
 function displayAnswers (data) {
   // Clean the div first
   cleanAnswerDiv()
-  console.log('welcome')
+  // console.log('welcome')
   for (var key in data) {
     if (key === 'alternatives') {
-      console.log('Alternatives mode!')
+      // console.log('Alternatives mode!')
       showAlternatives(data.alternatives)
       return
     }
@@ -146,38 +161,39 @@ function displayAnswers (data) {
   textinput.classList.add('visible')
 }
 function showAlternatives (alternatives) {
-  console.log(alternatives)
+  // console.log(alternatives)
   for (var x in alternatives) {
     createAlternative(x, alternatives[x])
-    console.log('alt: ' + x)
+    // console.log('alt: ' + x)
   }
 }
 function createAlternative (value, text) {
+  var div = document.createElement('div')
   var x = document.createElement('input')
   x.setAttribute('type', 'radio')
   x.setAttribute('name', 'choices')
   x.setAttribute('value', value)
   x.classList.add('radioButton')
-  radioChoices.appendChild(x)
-  text = document.createTextNode(text)
-  radioChoices.appendChild(text)
+  let textdiv = document.createTextNode(text)
+  div.appendChild(x)
+  div.appendChild(textdiv)
+  radioChoices.appendChild(div)
 }
 function getUserAnswer (data) {
-  console.log(data)
+  // console.log(data)
   for (var key in data) {
-    console.log(key)
+    // console.log(key)
     if (key === 'alternatives') {
-      console.log('> Getting answer from Alternatives')
+      // console.log('> Getting answer from Alternatives')
       var chosen = document.querySelector('input[name = "choices"]:checked').value
       return chosen
     }
   } // end of for
   // It is from inputtext
-  console.log('> Getting answer from textinput')
   return textinput.value
 }
 function cleanAnswerDiv () {
-  console.log('CLEAN ANSWER')
+  // console.log('CLEAN ANSWER')
   textinput.classList.remove('visible')
   textinput.classList.add('hide-me')
   textinput.value = ''
@@ -214,13 +230,13 @@ function gameWin () {
   clearInterval(interval)
   end()
   time = 20 // reset time
-  var parent = quizDiv.parentNode
-  parent.removeChild(quizDiv)
-  parent.appendChild(infoDiv)
   statement.innerHTML = 'Congratzulations! You completed the quiz.' +
   'Your total time is: ' + score
   toHighScores()
   updateHighScores()
+  var parent = quizDiv.parentNode
+  parent.removeChild(quizDiv)
+  parent.appendChild(infoDiv)
 }
 function toHighScores () {
   var game = {
@@ -228,8 +244,26 @@ function toHighScores () {
     score: score
   }
   top5.push(game)
+
+    // Sort Highscores board
+  let temp
+  console.log('AAAAAAAAAA> ' + top5.length)
+  if (top5.length >= 2) {
+    for (let i = 1; i < top5.length; i++) {
+      for (let j = i; j > 0; j--) {
+        console.log('if ' + top5[j] + ' < ' + top5[j - 1])
+        if (top5[j].score < top5[j - 1].score) {
+          temp = top5[j]
+          top5[j] = top5[j - 1]
+          top5[j - 1] = temp
+        }
+      }
+    }
+  }
+
   top5 = JSON.stringify(top5)
   localStorage.setItem('top5', top5)
+  top5 = JSON.parse(top5)
   console.log(top5)
 }
 function start () {
@@ -241,7 +275,7 @@ function end () {
   var timeDiff = endTime - startTime
   // strip the ms
   timeDiff /= 1000
-  // get seconds 
+  // get seconds
   score = timeDiff
   console.log(score + 'seconds')
 }
@@ -249,21 +283,10 @@ function updateHighScores () {
   while (highscores.firstChild) {
     highscores.removeChild(highscores.firstChild)
   }
-  // Sort Highscores board
-  function compare (a, b) {
-    if (parseFloat(a.score) < parseFloat(b.score)) {
-      return -1
-    }
-    if (parseFloat(a.score) > parseFloat(b.score)) {
-      return 1
-    }
-    return 0
-  }
-  var array = []
-  array = top5
-  array.sort(compare)
-  top5 = array
-  //
+  console.log(top5)
+  console.log(top5.length + '<- length')
+  // Remember to translate JSON into object!
+  // top5 = JSON.parse(top5)
   for (let i = 0; i < top5.length; i++) {
     var node = document.createElement('LI')  // Create a <li> node
     var textnode = document.createTextNode(top5[i].player + ' scored: ' + top5[i].score) // Create a text node
