@@ -1,5 +1,3 @@
-// var localStorage = require('localStorage')
-// var XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest
 module.exports = {
   quiz: quiz
 }
@@ -11,31 +9,27 @@ var config = {
   query: ''
 }
 // Initialize data
-// var data = 'Initialized Data xx'
-var questionContainer = document.getElementById('question') // where to put question
+var questionContainer = document.getElementById('question')
 var textinput = document.querySelector('#textanswer')
 var radioChoices = document.querySelector('#radiochoices')
 var check = document.querySelector('#check_btn')
-// var message = document.querySelector('#message')
 var infoDiv = document.querySelector('#info')
 var quizDiv = document.querySelector('#quiz')
 var startDiv = document.querySelector('#start')
 var playAgainbtn = document.querySelector('#restartGame')
 var statement = document.querySelector('#winOrLose')
 var highscores = document.querySelector('#highscores')
-
 var startTime, endTime
 var time = 20
 var score = 0
 var interval
 var top5 = []
 try {
-  let item = localStorage.getItem('top5')
+  let item = window.localStorage.getItem('top5')
   console.log(item)
   if (item !== '' && item !== null) {
-    console.log('HEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEELLL YEAH')
     var temp = JSON.parse(item)
-    console.log('>>>>' + temp[0].player + ' LENGth: ' + temp.length)
+    // console.log('>>>>' + temp[0].player + ' LENGth: ' + temp.length)
     for (let i = 0; i < temp.length; i++) {
       console.log(temp[i] + ' is pushed in top5 ')
       top5.push(temp[i])
@@ -58,34 +52,29 @@ function quiz (quizDiv, quizConfig) {
 // So, after the callback, the data returns as a parameter
 // The answer from the user should be send, after the click event
 function sendAnswer (data) {
-  // console.log(data)
-  // console.log('WE ARE IN SEND ANSWER')
   // We make a promise. It will promise us that the answer, will be given
   // to us as soon as the user gives an answer.
   new Promise(function (resolve, reject) {
     setTimeout(reject, 20000)
     // By clicking the check, it means that the user has made a decision - answer
-    check.addEventListener('click', function (e) {
-      // console.log('CLICK!')
-      e.target.removeEventListener(e.type, arguments.callee) // skip for now
+    check.addEventListener('click', function clickfun (e) {
       // GET DATA FROM USER
       try {
         var answer = getUserAnswer(data)
       } catch (err) {
         console.log('User didnt gave an answer.')
       }
-      // console.log('>> Checking if answer is correct...')
       var x = {
         answer: answer
       }
       console.log('ANSWER CHOSEN: ' + x.answer)
       x = JSON.stringify(x)
+      check.removeEventListener('click', clickfun)
       resolve(x)
     }) // Then, we have to send our answer to the server.
   }).then((readyanswer) => {
-    // console.log(data) // if this prints, then is okay.
     console.log('Sending answer... <' + readyanswer + '>')
-    var req = new XMLHttpRequest()
+    var req = new window.XMLHttpRequest()
     req.open('POST', data.nextURL)
     req.setRequestHeader('Content-type', 'application/json')
     req.send(readyanswer)
@@ -94,8 +83,6 @@ function sendAnswer (data) {
       if (req.status >= 200 && req.status < 400) {
         time = 20 // Answer is correct, reset time
         var data = JSON.parse(req.responseText)
-        // message.innerHTML = data.message
-        // console.log(data)
         // IMPORTANT! If there is not any other nextURL, then
         // the game has finished! We won :)
         var flag = false
@@ -109,22 +96,21 @@ function sendAnswer (data) {
           gameWin()
         }
       } else {
-        console.log('Error with GET')
+        console.log('Wrong answer.')
         gameOver()
       }
     }
   })
     .catch(err => {
       console.log(err)
-      console.log('lol you failed')
+      console.log('Game over')
       gameOver()
     })
 }
 //
-//
 function getQuestion (url, callback) {
   // Make the request to the server
-  var req = new XMLHttpRequest()
+  var req = new window.XMLHttpRequest()
   req.open('GET', url)
   req.setRequestHeader('Content-type', 'application/json')
   req.send()
@@ -161,10 +147,8 @@ function displayAnswers (data) {
   textinput.classList.add('visible')
 }
 function showAlternatives (alternatives) {
-  // console.log(alternatives)
   for (var x in alternatives) {
     createAlternative(x, alternatives[x])
-    // console.log('alt: ' + x)
   }
 }
 function createAlternative (value, text) {
@@ -193,7 +177,6 @@ function getUserAnswer (data) {
   return textinput.value
 }
 function cleanAnswerDiv () {
-  // console.log('CLEAN ANSWER')
   textinput.classList.remove('visible')
   textinput.classList.add('hide-me')
   textinput.value = ''
@@ -262,9 +245,9 @@ function toHighScores () {
   }
 
   top5 = JSON.stringify(top5)
-  localStorage.setItem('top5', top5)
+  window.localStorage.setItem('top5', top5)
   top5 = JSON.parse(top5)
-  console.log(top5)
+  // console.log(top5)
 }
 function start () {
   startTime = new Date()
@@ -284,9 +267,8 @@ function updateHighScores () {
     highscores.removeChild(highscores.firstChild)
   }
   console.log(top5)
-  console.log(top5.length + '<- length')
+  // console.log(top5.length + '<- length')
   // Remember to translate JSON into object!
-  // top5 = JSON.parse(top5)
   for (let i = 0; i < top5.length; i++) {
     var node = document.createElement('LI')  // Create a <li> node
     var textnode = document.createTextNode(top5[i].player + ' scored: ' + top5[i].score) // Create a text node
